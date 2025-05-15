@@ -1,0 +1,251 @@
+{
+  "version": "0.1.0",
+  "name": "finfun",
+  "instructions": [
+    {
+      "name": "createCompetition",
+      "accounts": [
+        {
+          "name": "competition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "creator",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        },
+        {
+          "name": "entryFee",
+          "type": "u64"
+        },
+        {
+          "name": "endTime",
+          "type": "i64"
+        },
+        {
+          "name": "startTime",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "joinCompetition",
+      "accounts": [
+        {
+          "name": "competition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "userPrediction",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "prediction",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "resolveCompetition",
+      "accounts": [
+        {
+          "name": "competition",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "creator",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "winner",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "winner",
+          "type": "publicKey"
+        },
+        {
+          "name": "payout",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Competition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "creator",
+            "type": "publicKey"
+          },
+          {
+            "name": "token",
+            "type": "string"
+          },
+          {
+            "name": "entryFee",
+            "type": "u64"
+          },
+          {
+            "name": "prizePool",
+            "type": "u64"
+          },
+          {
+            "name": "endTime",
+            "type": "i64"
+          },
+          {
+            "name": "startTime",
+            "type": "i64"
+          },
+          {
+            "name": "participants",
+            "type": "u32"
+          },
+          {
+            "name": "state",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserPrediction",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "publicKey"
+          },
+          {
+            "name": "competitionId",
+            "type": "string"
+          },
+          {
+            "name": "prediction",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidCompetition",
+      "msg": "Invalid competition parameters"
+    },
+    {
+      "code": 6001,
+      "name": "CompetitionAlreadyExists",
+      "msg": "A competition with this ID already exists"
+    },
+    {
+      "code": 6002,
+      "name": "CompetitionNotFound",
+      "msg": "Competition not found"
+    },
+    {
+      "code": 6003,
+      "name": "CompetitionEnded",
+      "msg": "Competition has already ended"
+    },
+    {
+      "code": 6004,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds to join competition"
+    },
+    {
+      "code": 6005,
+      "name": "AlreadyJoined",
+      "msg": "User has already joined this competition"
+    },
+    {
+      "code": 6006,
+      "name": "UnauthorizedAccess",
+      "msg": "Only the competition creator can perform this action"
+    },
+    {
+      "code": 6007,
+      "name": "CompetitionNotEnded",
+      "msg": "Competition has not ended yet"
+    },
+    {
+      "code": 6008,
+      "name": "AlreadyResolved",
+      "msg": "Competition has already been resolved"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidWinner",
+      "msg": "The provided winner is invalid"
+    }
+  ]
+}

@@ -1,0 +1,1189 @@
+TITLE: Example Anchor Program Structure (Rust)
+DESCRIPTION: Provides a complete example of a simple Anchor program demonstrating the use of `declare_id!`, `#[program]`, `#[derive(Accounts)]`, and `#[account]` macros. It includes a single instruction `initialize` that creates and initializes a new account.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/program-structure.mdx#_snippet_0
+
+LANGUAGE: Rust
+CODE:
+```
+use anchor_lang::prelude::*;
+
+declare_id!("11111111111111111111111111111111");
+
+#[program]
+mod hello_anchor {
+    use super::*;
+    pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
+        ctx.accounts.new_account.data = data;
+        msg!("Changed data to: {}!", data);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[account]
+pub struct NewAccount {
+    data: u64,
+}
+```
+
+----------------------------------------
+
+TITLE: Complete Anchor Program with Instruction and Accounts - Rust
+DESCRIPTION: This comprehensive example shows a full Anchor program module including the `#[program]` macro, an instruction handler function (`initialize`), and the associated `#[derive(Accounts)]` struct (`Initialize`) that defines the required accounts and their constraints.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/program-structure.mdx#_snippet_6
+
+LANGUAGE: Rust
+CODE:
+```
+#[program]
+mod hello_anchor {
+    use super::*;
+    pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
+        ctx.accounts.new_account.data = data;
+        msg!("Changed data to: {}!", data);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+----------------------------------------
+
+TITLE: Defining Anchor Program Instruction (Rust)
+DESCRIPTION: This Rust code defines an Anchor program named 'hello_anchor' with an 'initialize' instruction. It shows the instruction definition, the 'Accounts' struct required for the instruction, and a simple 'Account' struct to store data. The 'initialize' function takes a 'Context' and a 'u64' data value, stores the data in the 'new_account', and logs a message. The 'Initialize' struct specifies the accounts needed: 'new_account' (initialized, payer is signer, space allocated), 'signer' (mutable signer), and 'system_program'.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/idl.mdx#_snippet_0
+
+LANGUAGE: Rust
+CODE:
+```
+use anchor_lang::prelude::*;
+
+declare_id!("BYFW1vhC1ohxwRbYoLbAWs86STa25i9sD5uEusVjTYNd");
+
+#[program]
+mod hello_anchor {
+    use super::*;
+    // [!code word:initialize]
+    // [!code word:Initialize]
+    // [!code highlight:5]
+    pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
+        ctx.accounts.new_account.data = data;
+        msg!("Changed data to: {}!", data);
+        Ok(())
+    }
+}
+
+ // [!code highlight:8]
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[account]
+pub struct NewAccount {
+    data: u64,
+}
+```
+
+----------------------------------------
+
+TITLE: Creating a New Anchor Project
+DESCRIPTION: Use the `anchor init` command followed by the desired project name to create a new Anchor project directory with default program and test files.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/quickstart/local.mdx#_snippet_1
+
+LANGUAGE: shell
+CODE:
+```
+anchor init my-project
+```
+
+----------------------------------------
+
+TITLE: Initial Anchor Program Code (lib.rs)
+DESCRIPTION: This is the initial Rust code generated for a new Anchor project in `src/lib.rs`. It defines the program's ID, the main program module with an `initialize` instruction, the required accounts for the instruction, and the data structure for a program-owned account.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/quickstart/solpg.mdx#_snippet_1
+
+LANGUAGE: Rust
+CODE:
+```
+use anchor_lang::prelude::*;
+
+// This is your program's public key and it will update
+// automatically when you build the project.
+declare_id!("11111111111111111111111111111111");
+
+#[program]
+mod hello_anchor {
+    use super::*;
+    pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
+        ctx.accounts.new_account.data = data;
+        msg!("Changed data to: {}!", data); // Message will show up in the tx logs
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    // We must specify the space in order to initialize an account.
+    // First 8 bytes are default account discriminator,
+    // next 8 bytes come from NewAccount.data being type u64.
+    // (u64 = 64 bits unsigned integer = 8 bytes)
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[account]
+pub struct NewAccount {
+    data: u64
+}
+```
+
+----------------------------------------
+
+TITLE: Defining Accounts with Constraints (Rust)
+DESCRIPTION: Defines the `Initialize` struct implementing the `Accounts` trait, showing how to apply constraints like `init`, `payer`, and `space` to a new account and `mut` to the signer using the `#[account(..)]` attribute.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/program-structure.mdx#_snippet_9
+
+LANGUAGE: Rust
+CODE:
+```
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+----------------------------------------
+
+TITLE: Specifying Program ID with declare_id! (Rust)
+DESCRIPTION: Shows how to use the `declare_id!` macro to specify the on-chain address (Program ID) for the Anchor program. By default, this is the public key of the keypair generated during the build process.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/program-structure.mdx#_snippet_1
+
+LANGUAGE: Rust
+CODE:
+```
+use anchor_lang::prelude::*;
+
+// [!code highlight]
+declare_id!("11111111111111111111111111111111");
+```
+
+----------------------------------------
+
+TITLE: Applying Anchor Accounts Derive Macro - Rust
+DESCRIPTION: This snippet demonstrates applying the `#[derive(Accounts)]` macro to a Rust struct. This macro automatically generates code to implement the `Accounts` trait, simplifying account validation, serialization, and deserialization for instruction handlers.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/program-structure.mdx#_snippet_7
+
+LANGUAGE: Rust
+CODE:
+```
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+----------------------------------------
+
+TITLE: Invoking Anchor Instruction from Client (TypeScript)
+DESCRIPTION: This TypeScript code demonstrates how to use the generated client to interact with the 'hello_anchor' program. It sets up the Anchor provider and program instance. The 'initialize' test case generates a keypair for the new account, invokes the 'initialize' instruction with a 'BN' data value, specifying the required accounts ('newAccount', 'signer') and signers ('newAccountKp'). After the transaction, it fetches the created account and asserts that the stored data matches the input data.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/idl.mdx#_snippet_2
+
+LANGUAGE: TypeScript
+CODE:
+```
+import * as anchor from "@coral-xyz/anchor";
+import { Program, BN } from "@coral-xyz/anchor";
+import { HelloAnchor } from "../target/types/hello_anchor";
+import { Keypair } from "@solana/web3.js";
+import assert from "assert";
+
+describe("hello_anchor", () => {
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
+  const wallet = provider.wallet as anchor.Wallet;
+  const program = anchor.workspace.HelloAnchor as Program<HelloAnchor>;
+
+  it("initialize", async () => {
+    // Generate keypair for the new account
+    const newAccountKp = new Keypair();
+
+    // Send transaction
+    const data = new BN(42);
+    // [!code word:initialize]
+    // [!code highlight:8]
+    const transactionSignature = await program.methods
+      .initialize(data)
+      .accounts({
+        newAccount: newAccountKp.publicKey,
+        signer: wallet.publicKey,
+      })
+      .signers([newAccountKp])
+      .rpc();
+
+    // Fetch the created account
+    const newAccount = await program.account.newAccount.fetch(
+      newAccountKp.publicKey,
+    );
+
+    console.log("Transaction signature: ", transactionSignature);
+    console.log("On-chain data is:", newAccount.data.toString());
+    assert(data.eq(newAccount.data));
+  });
+});
+```
+
+----------------------------------------
+
+TITLE: Defining Program Accounts in Rust (Anchor)
+DESCRIPTION: This snippet defines the `hello_anchor` Anchor program. It includes the `initialize` instruction which takes a `u64` data argument and stores it in a `NewAccount`. It also defines the `NewAccount` struct using `#[account]` and the `Initialize` context struct using `#[derive(Accounts)]` to specify account constraints.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/idl.mdx#_snippet_3
+
+LANGUAGE: rust
+CODE:
+```
+use anchor_lang::prelude::*;
+
+declare_id!("BYFW1vhC1ohxwRbYoLbAWs86STa25i9sD5uEusVjTYNd");
+
+#[program]
+mod hello_anchor {
+    use super::*;
+    pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
+        ctx.accounts.new_account.data = data;
+        msg!("Changed data to: {}!", data);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+// [!code word:NewAccount]
+// [!code highlight:4]
+#[account]
+pub struct NewAccount {
+    data: u64,
+}
+```
+
+----------------------------------------
+
+TITLE: Implementing Anchor Counter Program in Rust
+DESCRIPTION: This snippet defines a complete Anchor program for a counter. It includes the `initialize` instruction to create the counter account and set its initial state and authority, and the `increment` instruction which increases the counter value, restricted to the designated authority.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/README.md#_snippet_0
+
+LANGUAGE: Rust
+CODE:
+```
+use anchor_lang::prelude::*;
+
+declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+
+#[program]
+mod counter {
+    use super::*;
+
+    pub fn initialize(ctx: Context<Initialize>, start: u64) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.authority = *ctx.accounts.authority.key;
+        counter.count = start;
+        Ok(())
+    }
+
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        counter.count += 1;
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = authority, space = 48)]
+    pub counter: Account<'info, Counter>,
+    pub authority: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct Increment<'info> {
+    #[account(mut, has_one = authority)]
+    pub counter: Account<'info, Counter>,
+    pub authority: Signer<'info>,
+}
+
+#[account]
+pub struct Counter {
+    pub authority: Pubkey,
+    pub count: u64,
+}
+```
+
+----------------------------------------
+
+TITLE: Defining Accounts Struct Fields with Anchor - Rust
+DESCRIPTION: This snippet highlights the individual fields within an `Accounts` struct defined using `#[derive(Accounts)]`. Each field represents a specific account required by the instruction, and its name is used to access the account within the instruction handler via `ctx.accounts`.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/program-structure.mdx#_snippet_8
+
+LANGUAGE: Rust
+CODE:
+```
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
+
+----------------------------------------
+
+TITLE: Using Anchor CLI
+DESCRIPTION: This snippet shows the basic usage of the Anchor CLI, listing the available flags and subcommands for managing an Anchor workspace and its programs.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/references/cli.mdx#_snippet_0
+
+LANGUAGE: shell
+CODE:
+```
+anchor-cli
+
+USAGE:
+    anchor <SUBCOMMAND>
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+SUBCOMMANDS:
+    account    Fetch and deserialize an account using the IDL provided
+    build      Builds the workspace
+    cluster    Cluster commands
+    deploy     Deploys each program in the workspace
+    expand     Expands the macros of a program or the workspace
+    help       Prints this message or the help of the given subcommand(s)
+    idl        Commands for interacting with interface definitions
+    init       Initializes a workspace
+    keys       Program keypair commands
+    migrate    Runs the deploy migration script
+    new        Creates a new program
+    shell      Starts a node shell with an Anchor client setup according to the local config
+    test       Runs integration tests against a localnetwork
+    upgrade    Upgrades a single program. The configured wallet must be the upgrade authority
+    verify     Verifies the on-chain bytecode matches the locally compiled artifact. Run this
+               command inside a program subdirectory, i.e., in the dir containing the program's
+               Cargo.toml
+```
+
+----------------------------------------
+
+TITLE: Defining Signer Account in Anchor Rust
+DESCRIPTION: Demonstrates the use of the `Signer` type within an Anchor `#[derive(Accounts)]` struct to ensure that the provided account has signed the current transaction, a common requirement for instruction initiators.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/references/account-types.mdx#_snippet_8
+
+LANGUAGE: Rust
+CODE:
+```
+#[derive(Accounts)]
+pub struct InstructionAccounts<'info> {
+    // [!code word:Signer]
+    // [!code highlight]
+    pub signer: Signer<'info>,
+}
+```
+
+----------------------------------------
+
+TITLE: Defining Instruction Logic with #[program] (Rust)
+DESCRIPTION: Illustrates the use of the `#[program]` attribute to annotate the module that contains all the instruction handler functions for the program. Each public function within this module corresponds to a callable instruction.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/program-structure.mdx#_snippet_3
+
+LANGUAGE: Rust
+CODE:
+```
+use anchor_lang::prelude::*;
+
+declare_id!("11111111111111111111111111111111");
+
+// [!code highlight]
+#[program]
+mod hello_anchor {
+    use super::*;
+    // [!code highlight:5]
+    pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
+        ctx.accounts.new_account.data = data;
+        msg!("Changed data to: {}!", data);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[account]
+pub struct NewAccount {
+    data: u64;
+}
+```
+
+----------------------------------------
+
+TITLE: Define Program Instructions (Rust)
+DESCRIPTION: The `#[program]` attribute annotates a Rust module that contains the functions representing the program's callable instructions. Each public function within this module corresponds to an instruction that can be invoked by clients.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/quickstart/solpg.mdx#_snippet_3
+
+LANGUAGE: Rust
+CODE:
+```
+#[program]
+mod hello_anchor {
+    use super::*;
+    pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
+        ctx.accounts.new_account.data = data;
+        msg!("Changed data to: {}!", data); // Message will show up in the tx logs
+        Ok(())
+    }
+}
+```
+
+----------------------------------------
+
+TITLE: Invoking Initialize Instruction with Anchor (TypeScript)
+DESCRIPTION: This TypeScript test snippet demonstrates how to call the 'initialize' instruction of an Anchor program. It involves generating a new account keypair, constructing and sending a transaction with input data, signing it, confirming its execution on the network, fetching the created account's data, and asserting the fetched data matches the input.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/quickstart/solpg.mdx#_snippet_10
+
+LANGUAGE: typescript
+CODE:
+```
+// No imports needed: web3, anchor, pg and more are globally available
+
+describe("Test", () => {
+  it("initialize", async () => {
+    // Generate keypair for the new account
+    const newAccountKp = new web3.Keypair();
+
+    // Send transaction
+    const data = new BN(42);
+    const txHash = await pg.program.methods
+      .initialize(data)
+      .accounts({
+        newAccount: newAccountKp.publicKey,
+        signer: pg.wallet.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+      })
+      .signers([newAccountKp])
+      .rpc();
+    console.log(`Use 'solana confirm -v ${txHash}' to see the logs`);
+
+    // Confirm transaction
+    await pg.connection.confirmTransaction(txHash);
+
+    // Fetch the created account
+    const newAccount = await pg.program.account.newAccount.fetch(
+      newAccountKp.publicKey,
+    );
+
+    console.log("On-chain data is:", newAccount.data.toString());
+
+    // Check whether the data on-chain is equal to local 'data'
+    assert(data.eq(newAccount.data));
+  });
+});
+```
+
+----------------------------------------
+
+TITLE: Implementing Token Transfer with PDA Signature (Rust)
+DESCRIPTION: This Rust function implements the logic for transferring tokens within a Solana Anchor program. It constructs a CPI context for the `transfer_checked` instruction of the token program, using a PDA derived from the "token" seed and the account's bump as the signer. It transfers the full amount from the sender's token account to the recipient's token account.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/tokens/basics/transfer-tokens.mdx#_snippet_7
+
+LANGUAGE: Rust
+CODE:
+```
+pub fn transfer_tokens(ctx: Context<TransferTokens>) -> Result<()> {
+    // [!code word:signer_seeds]
+    // [!code highlight]
+    let signer_seeds: &[&[&[u8]]] = &[&[b"token", &[ctx.bumps.sender_token_account]]];
+
+    let amount = ctx.accounts.sender_token_account.amount;
+    let decimals = ctx.accounts.mint.decimals;
+
+    let cpi_accounts = TransferChecked {
+        mint: ctx.accounts.mint.to_account_info(),
+        from: ctx.accounts.sender_token_account.to_account_info(),
+        to: ctx.accounts.recipient_token_account.to_account_info(),
+        authority: ctx.accounts.sender_token_account.to_account_info(),
+    };
+    let cpi_program = ctx.accounts.token_program.to_account_info();
+    // [!code highlight:2]
+    let cpi_context = CpiContext::new(cpi_program, cpi_accounts).with_signer(signer_seeds);
+    token_interface::transfer_checked(cpi_context, amount, decimals)?;
+    Ok(())
+}
+```
+
+----------------------------------------
+
+TITLE: Build Anchor Program
+DESCRIPTION: Build the Anchor program to generate an updated `.so` file. This is a prerequisite for updating a deployed program.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/quickstart/local.mdx#_snippet_16
+
+LANGUAGE: shell
+CODE:
+```
+anchor build
+```
+
+----------------------------------------
+
+TITLE: Deploy Anchor Program (Shell)
+DESCRIPTION: This command deploys the compiled Anchor program to the specified network (devnet by default in Solana Playground). It requires SOL in the deployer's account to cover transaction fees and rent for the program account.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/quickstart/solpg.mdx#_snippet_8
+
+LANGUAGE: Shell
+CODE:
+```
+deploy
+```
+
+----------------------------------------
+
+TITLE: Interacting with Anchor Program Client (Rust)
+DESCRIPTION: This Rust snippet demonstrates how to use the Anchor client to connect to a localnet cluster, create a program client, build and send multiple instructions (initialize and increment) in a single transaction, and fetch the updated account data.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/clients/rust.mdx#_snippet_3
+
+LANGUAGE: Rust
+CODE:
+```
+let provider = Client::new_with_options(
+        Cluster::Localnet,
+        Rc::new(payer),
+        CommitmentConfig::confirmed(),
+    );
+    let program = provider.program(example::ID)?;
+
+    // Build and send instructions
+    println!("\nSend transaction with initialize and increment instructions");
+    let initialize_ix = program
+        .request()
+        .accounts(accounts::Initialize {
+            counter: counter.pubkey(),
+            payer: program.payer(),
+            system_program: system_program::ID,
+        })
+        .args(args::Initialize)
+        .instructions()?;
+
+    let increment_ix = program
+        .request()
+        .accounts(accounts::Increment {
+            counter: counter.pubkey(),
+        })
+        .args(args::Increment)
+        .instructions()?;
+
+    let signature = program
+        .request()
+        .instruction(initialize_ix[0].clone())
+        .instruction(increment_ix[0].clone())
+        .signer(&counter)
+        .send()
+        .await?;
+    println!("   Transaction confirmed: {}", signature);
+
+    println!("\nFetch counter account data");
+    let counter_account: Counter = program.account::<Counter>(counter.pubkey()).await?;
+    println!("   Counter value: {}", counter_account.count);
+    Ok(())
+```
+
+----------------------------------------
+
+TITLE: Create New Program (Shell)
+DESCRIPTION: Generates a new program crate within the workspace's `programs/` directory, initializing it with boilerplate code based on the provided program name.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/references/cli.mdx#_snippet_22
+
+LANGUAGE: shell
+CODE:
+```
+anchor new <program-name>
+```
+
+----------------------------------------
+
+TITLE: Define Accounts for Token Transfer Instruction in Anchor
+DESCRIPTION: This Rust code defines the `TransferTokens` struct using Anchor's `#[derive(Accounts)]` macro. It specifies the required accounts for the `transfer_tokens` instruction, including the signer (source account owner), the mint account, the sender's token account, the recipient's token account, and the token program itself. These accounts are necessary for performing a token transfer via CPI.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/tokens/basics/transfer-tokens.mdx#_snippet_1
+
+LANGUAGE: Rust
+CODE:
+```
+#[derive(Accounts)]
+pub struct TransferTokens<'info> {
+    // The source token account owner
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    // The mint account specifying the type of token
+    #[account(mut)]
+    pub mint: InterfaceAccount<'info, Mint>,
+    // The source token account to transfer tokens from
+    #[account(mut)]
+    pub sender_token_account: InterfaceAccount<'info, TokenAccount>,
+    // The destination token account to receive tokens
+    #[account(mut)]
+    pub recipient_token_account: InterfaceAccount<'info, TokenAccount>,
+    // The token program that will process the transfer
+    pub token_program: Interface<'info, TokenInterface>,
+}
+```
+
+----------------------------------------
+
+TITLE: Anchor Program Definition (lib.rs)
+DESCRIPTION: Defines a simple Anchor program with two instructions: `initialize` to create and set up a counter account, and `increment` to increase the value stored in the counter account. It uses Anchor's `#[program]` and `#[account]` attributes for defining program logic and account structures.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/clients/rust.mdx#_snippet_0
+
+LANGUAGE: Rust
+CODE:
+```
+use anchor_lang::prelude::*;
+
+declare_id!("6khKp4BeJpCjBY1Eh39ybiqbfRnrn2UzWeUARjQLXYRC");
+
+#[program]
+pub mod example {
+    use super::*;
+
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        let counter = &ctx.accounts.counter;
+        msg!("Counter account created! Current count: {}", counter.count);
+        Ok(())
+    }
+
+    pub fn increment(ctx: Context<Increment>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        msg!("Previous counter: {}", counter.count);
+
+        counter.count += 1;
+        msg!("Counter incremented! Current count: {}", counter.count);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    #[account(
+        init,
+        payer = payer,
+        space = 8 + 8
+    )]
+    pub counter: Account<'info, Counter>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct Increment<'info> {
+    #[account(mut)]
+    pub counter: Account<'info, Counter>,
+}
+
+#[account]
+pub struct Counter {
+    pub count: u64,
+}
+```
+
+----------------------------------------
+
+TITLE: Implement Token Transfer Instruction in Anchor
+DESCRIPTION: This Rust code defines an Anchor program instruction `transfer_tokens` that performs a checked token transfer via Cross-Program Invocation (CPI) to the Solana Token Program or Token Extension Program. It uses the `anchor_spl::token_interface` crate and requires specific accounts defined in the `TransferTokens` struct, including the mint, sender and recipient token accounts, and the signer/authority. The instruction takes the transfer `amount` as input and uses the mint's decimals to ensure the correct amount is transferred.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/tokens/basics/transfer-tokens.mdx#_snippet_0
+
+LANGUAGE: Rust
+CODE:
+```
+use anchor_lang::prelude::*;
+use anchor_spl::token_interface::{self, TokenAccount, TokenInterface, TransferChecked};
+
+declare_id!("3pX5NKLru1UBDVckynWQxsgnJeUN3N1viy36Gk9TSn8d");
+
+#[program]
+pub mod token_example {
+    use super::*;
+
+    pub fn transfer_tokens(ctx: Context<TransferTokens>, amount: u64) -> Result<()> {
+        let decimals = ctx.accounts.mint.decimals;
+
+        let cpi_accounts = TransferChecked {
+            mint: ctx.accounts.mint.to_account_info(),
+            from: ctx.accounts.sender_token_account.to_account_info(),
+            to: ctx.accounts.recipient_token_account.to_account_info(),
+            authority: ctx.accounts.signer.to_account_info(),
+        };
+        let cpi_program = ctx.accounts.token_program.to_account_info();
+        let cpi_context = CpiContext::new(cpi_program, cpi_accounts);
+        // [!code highlight]
+        token_interface::transfer_checked(cpi_context, amount, decimals)?;
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+pub struct TransferTokens<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    #[account(mut)]
+    pub mint: InterfaceAccount<'info, Mint>,
+    #[account(mut)]
+    pub sender_token_account: InterfaceAccount<'info, TokenAccount>,
+    #[account(mut)]
+    pub recipient_token_account: InterfaceAccount<'info, TokenAccount>,
+    pub token_program: Interface<'info, TokenInterface>,
+}
+```
+
+----------------------------------------
+
+TITLE: Defining Custom Program Errors with Anchor error_code Attribute - Rust
+DESCRIPTION: Demonstrates how to define custom errors specific to a program using the `#[error_code]` attribute on an enum. Anchor automatically assigns error codes (starting from 6000) and processes the `#[msg]` attributes to provide descriptive error messages.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/features/errors.mdx#_snippet_5
+
+LANGUAGE: Rust
+CODE:
+```
+#[error_code]
+pub enum MyError {
+    #[msg("My custom error message")]
+    MyCustomError,
+    #[msg("My second custom error message")]
+    MySecondCustomError,
+}
+```
+
+----------------------------------------
+
+TITLE: Anchor SPL Constraint: token
+DESCRIPTION: Used to create or validate SPL token accounts. Constraints can specify the required mint account and the account's authority. The token program can optionally be overridden.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/references/account-constraints.mdx#_snippet_13
+
+LANGUAGE: Rust
+CODE:
+```
+#[account(
+    token::mint = <target_account>,
+    token::authority = <target_account>
+)]
+```
+
+LANGUAGE: Rust
+CODE:
+```
+#[account(
+    token::mint = <target_account>,
+    token::authority = <target_account>,
+    token::token_program = <target_account>
+)]
+```
+
+----------------------------------------
+
+TITLE: Mint Account Structure Definition in Rust
+DESCRIPTION: Defines the `Mint` struct in Rust, representing the data stored in a Solana token mint account. It includes fields for mint authority, total supply, decimal places, initialization status, and freeze authority. This structure is fundamental to understanding token accounts on Solana.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/tokens/basics/create-mint.mdx#_snippet_0
+
+LANGUAGE: Rust
+CODE:
+```
+/// Mint data.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct Mint {
+  /// Optional authority used to mint new tokens. The mint authority may only
+  /// be provided during mint creation. If no mint authority is present
+  /// then the mint has a fixed supply and no further tokens may be
+  /// minted.
+  pub mint_authority: COption<Pubkey>,
+  /// Total supply of tokens.
+  pub supply: u64,
+  /// Number of base 10 digits to the right of the decimal place.
+  pub decimals: u8,
+  /// Is `true` if this structure has been initialized
+  pub is_initialized: bool,
+  /// Optional authority to freeze token accounts.
+  pub freeze_authority: COption<Pubkey>,
+}
+```
+
+----------------------------------------
+
+TITLE: Client Interaction with PDA Mint Program
+DESCRIPTION: Provides TypeScript code using Anchor's client library to interact with the program. It demonstrates how to find the PDA addresses for the mint and token account, call the `createMint` instruction, and then call the `mintTokens` instruction.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/tokens/basics/mint-tokens.mdx#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+```
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { TokenExample } from "../target/types/token_example";
+import {
+  TOKEN_2022_PROGRAM_ID,
+  getAssociatedTokenAddress,
+  getMint,
+  getAccount,
+} from "@solana/spl-token";
+
+describe("token-example", () => {
+  anchor.setProvider(anchor.AnchorProvider.env());
+
+  const program = anchor.workspace.TokenExample as Program<TokenExample>;
+  const [mint, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("mint")],
+    program.programId,
+  );
+
+  const [token, tokenBump] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("token")],
+    program.programId,
+  );
+
+  it("Is initialized!", async () => {
+    const tx = await program.methods
+      .createMint()
+      .accounts({
+        tokenProgram: TOKEN_2022_PROGRAM_ID,
+      })
+      .rpc({ commitment: "confirmed" });
+    console.log("Your transaction signature", tx);
+
+    const mintAccount = await getMint(
+      program.provider.connection,
+      mint,
+      "confirmed",
+      TOKEN_2022_PROGRAM_ID,
+    );
+
+    console.log("Mint Account", mintAccount);
+  });
+
+  it("Mint Tokens", async () => {
+    const tx = await program.methods
+      .mintTokens(new anchor.BN(100))
+      .accounts({
+        tokenProgram: TOKEN_2022_PROGRAM_ID,
+      })
+      .rpc({ commitment: "confirmed" });
+
+    console.log("Your transaction signature", tx);
+
+    const associatedTokenAccount = await getAssociatedTokenAddress(
+      mint,
+      program.provider.publicKey,
+      false,
+      TOKEN_2022_PROGRAM_ID,
+    );
+
+    const tokenAccount = await getAccount(
+      program.provider.connection,
+      associatedTokenAccount,
+      "confirmed",
+      TOKEN_2022_PROGRAM_ID,
+    );
+
+    console.log("Token Account", tokenAccount);
+  });
+});
+```
+
+----------------------------------------
+
+TITLE: Fetching Program Account Data in Client (TypeScript)
+DESCRIPTION: This snippet demonstrates a TypeScript client test for the `hello_anchor` program. It shows how to use the generated client to initialize a `NewAccount` with data and then fetch the created account's data using `program.account.newAccount.fetch()`.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/idl.mdx#_snippet_5
+
+LANGUAGE: ts
+CODE:
+```
+import * as anchor from "@coral-xyz/anchor";
+import { Program, BN } from "@coral-xyz/anchor";
+import { HelloAnchor } from "../target/types/hello_anchor";
+import { Keypair } from "@solana/web3.js";
+import assert from "assert";
+
+describe("hello_anchor", () => {
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
+  const wallet = provider.wallet as anchor.Wallet;
+  const program = anchor.workspace.HelloAnchor as Program<HelloAnchor>;
+
+  it("initialize", async () => {
+    // Generate keypair for the new account
+    const newAccountKp = new Keypair();
+
+    // Send transaction
+    const data = new BN(42);
+    const transactionSignature = await program.methods
+      .initialize(data)
+      .accounts({
+        newAccount: newAccountKp.publicKey,
+        signer: wallet.publicKey,
+      })
+      .signers([newAccountKp])
+      .rpc();
+
+    // Fetch the created account
+    // [!code word:.newAccount.:1]
+    // [!code highlight:3]
+    const newAccount = await program.account.newAccount.fetch(
+      newAccountKp.publicKey,
+    );
+
+    console.log("Transaction signature: ", transactionSignature);
+    console.log("On-chain data is:", newAccount.data.toString());
+    assert(data.eq(newAccount.data));
+  });
+});
+```
+
+----------------------------------------
+
+TITLE: Anchor Client: Test PDA Token Transfer (TypeScript)
+DESCRIPTION: This TypeScript code provides a client-side test for the Anchor program. It demonstrates how to find the PDA addresses for the mint and token account using `findProgramAddressSync` and how to call the `createAndMintTokens` instruction from the client.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/tokens/basics/transfer-tokens.mdx#_snippet_4
+
+LANGUAGE: TypeScript
+CODE:
+```
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { TokenExample } from "../target/types/token_example";
+import {
+  TOKEN_2022_PROGRAM_ID,
+  getAssociatedTokenAddress,
+  getMint,
+  getAccount,
+} from "@solana/spl-token";
+
+describe("token-example", () => {
+  anchor.setProvider(anchor.AnchorProvider.env());
+
+  const program = anchor.workspace.TokenExample as Program<TokenExample>;
+  const [mint, mintBump] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("mint")],
+    program.programId,
+  );
+
+  const [token, tokenBump] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("token")],
+    program.programId,
+  );
+
+  it("Is initialized!", async () => {
+    const tx = await program.methods
+      .createAndMintTokens(new anchor.BN(100))
+      .accounts({
+        tokenProgram: TOKEN_2022_PROGRAM_ID,
+      })
+      .rpc({ commitment: "confirmed" });
+    console.log("Your transaction signature", tx);
+
+    const mintAccount = await getMint(
+
+```
+
+----------------------------------------
+
+TITLE: MintTokens Accounts Struct
+DESCRIPTION: This Rust snippet defines the `MintTokens` accounts struct required for the `mint_tokens` instruction in an Anchor program. It specifies the necessary accounts: `signer` (the mint authority), `mint` (the token mint account), `token_account` (the destination token account), and `token_program` (the token program being invoked).
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/tokens/basics/mint-tokens.mdx#_snippet_1
+
+LANGUAGE: Rust
+CODE:
+```
+#[derive(Accounts)]
+pub struct MintTokens<'info> {
+    // The mint authority
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    // The mint account
+    #[account(mut)]
+    pub mint: InterfaceAccount<'info, Mint>,
+    // The destination token account
+    #[account(mut)]
+    pub token_account: InterfaceAccount<'info, TokenAccount>,
+    // The token program
+    pub token_program: Interface<'info, TokenInterface>,
+}
+```
+
+----------------------------------------
+
+TITLE: Transfer Lamports (Rust)
+DESCRIPTION: Demonstrates the new ergonomic and performant methods (`sub_lamports`, `add_lamports`) for transferring lamports between accounts in Anchor programs, compared to the previous method involving `to_account_info()` and manual lamport manipulation.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/updates/release-notes/0-29-0.mdx#_snippet_8
+
+LANGUAGE: rust
+CODE:
+```
+**ctx.accounts.from.to_account_info().try_borrow_mut_lamports()? -= amount;
+**ctx.accounts.to.to_account_info().try_borrow_mut_lamports()? += amount;
+```
+
+LANGUAGE: rust
+CODE:
+```
+ctx.accounts.from.sub_lamports(amount)?;
+ctx.accounts.to.add_lamports(amount)?;
+```
+
+----------------------------------------
+
+TITLE: Mint Tokens Instruction Logic (CPI)
+DESCRIPTION: This Rust snippet shows the core logic within the `mint_tokens` instruction function. It demonstrates how to prepare for a Cross-Program Invocation (CPI) to the Token Program's `mint_to` instruction by creating the `MintTo` struct with the required accounts, building the `CpiContext`, and invoking the `token_interface::mint_to` function.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/tokens/basics/mint-tokens.mdx#_snippet_2
+
+LANGUAGE: Rust
+CODE:
+```
+pub fn mint_tokens(ctx: Context<MintTokens>, amount: u64) -> Result<()> {
+    // Create the MintTo struct with the accounts required for the CPI
+    let cpi_accounts = MintTo {
+        mint: ctx.accounts.mint.to_account_info(),
+        to: ctx.accounts.token_account.to_account_info(),
+        authority: ctx.accounts.signer.to_account_info(),
+    };
+
+    // The program being invoked in the CPI
+    let cpi_program = ctx.accounts.token_program.to_account_info();
+
+    // Combine the accounts and program into a "CpiContext"
+    let cpi_context = CpiContext::new(cpi_program, cpi_accounts);
+
+    // Make CPI to mint_to instruction on the token program
+    token_interface::mint_to(cpi_context, amount)?;
+    Ok(())
+}
+```
+
+----------------------------------------
+
+TITLE: Implementing Basic Anchor Instruction Handler - Rust
+DESCRIPTION: This snippet shows a simple Anchor instruction handler function named `initialize`. It takes a `Context` parameter, parameterized by the `Initialize` accounts struct, and an additional `u64` argument. It demonstrates accessing accounts via `ctx.accounts` and logging a message.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/basics/program-structure.mdx#_snippet_5
+
+LANGUAGE: Rust
+CODE:
+```
+pub fn initialize(ctx: Context<Initialize>, data: u64) -> Result<()> {
+    ctx.accounts.new_account.data = data;
+    msg!("Changed data to: {}!", data);
+    Ok(())
+}
+```
+
+----------------------------------------
+
+TITLE: Manual Account Space Calculation in Anchor Rust
+DESCRIPTION: Demonstrates how to manually calculate the required space for an Anchor account struct (`MyData`) containing various types like `u16`, `Enum`, and `Vec<Pubkey>`. It shows defining a `MAX_SIZE` constant and using it within the `#[account(init, ...)]` attribute, highlighting the necessary addition of 8 bytes for Anchor's internal discriminator.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/references/space.mdx#_snippet_0
+
+LANGUAGE: Rust
+CODE:
+```
+#[account]
+pub struct MyData {
+    pub val: u16,
+    pub state: GameState,
+    pub players: Vec<Pubkey> // we want to support up to 10 players
+}
+
+
+impl MyData {
+    // [!code highlight]
+    pub const MAX_SIZE: usize = 2 + (1 + 32) + (4 + 10 * 32);
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
+pub enum GameState {
+    Active,
+    Tie,
+    Won { winner: Pubkey },
+}
+
+#[derive(Accounts)]
+pub struct InitializeMyData<'info> {
+    // Note that we have to add 8 to the space for the internal anchor
+    // [!code highlight]
+    #[account(init, payer = signer, space = 8 + MyData::MAX_SIZE)]
+    pub acc: Account<'info, MyData>,
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>
+}
+```
+
+----------------------------------------
+
+TITLE: Define Instruction Accounts (Rust)
+DESCRIPTION: The `#[derive(Accounts)]` macro is applied to a struct to define the accounts required for a specific program instruction. Each field in the struct represents an account, and attributes like `#[account(init, payer = signer, space = 8 + 8)]` specify constraints and initialization logic handled by Anchor.
+SOURCE: https://github.com/solana-foundation/anchor/blob/master/docs/content/docs/quickstart/solpg.mdx#_snippet_4
+
+LANGUAGE: Rust
+CODE:
+```
+#[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = signer, space = 8 + 8)]
+    pub new_account: Account<'info, NewAccount>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+```
