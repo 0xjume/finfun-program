@@ -1,7 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import React, {  useEffect  } from 'react';
 
 const LandingPage = () => {
   const { publicKey } = useWallet();

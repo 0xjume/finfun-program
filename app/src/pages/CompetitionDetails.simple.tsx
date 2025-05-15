@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, {  useState  } from 'react';
 import { useParams } from 'react-router-dom';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';

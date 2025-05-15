@@ -1,6 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React, {  useEffect, useState  } from 'react';
 
 // Mock data for active competitions - in a real app this would come from your Solana program
 const mockUserCompetitions = [

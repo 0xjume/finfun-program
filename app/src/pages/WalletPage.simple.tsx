@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, {  useState, useEffect  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
@@ -101,7 +101,7 @@ const WalletPage = () => {
               if (!tx) return null;
               
               // Extract memo if it exists
-              let memo = null;
+              let memo: string | null = null;
               try {
                 // This is a simplified approach - in a real app you'd need more robust parsing
                 if (tx.meta && tx.meta.logMessages) {
@@ -156,10 +156,11 @@ const WalletPage = () => {
               }
               
               // Try to match with competitions
-              const competitionId = userCompetitions.find(c => {
-                // This is simplified - in a real app, you'd have more robust matching
-                return memo && (memo.includes(c.id) || c.id.includes(sig.signature.slice(0, 8)));
-              })?.id;
+              const competitionId = userCompetitions && userCompetitions.length > 0 ? 
+                userCompetitions.find(c => {
+                  // This is simplified - in a real app, you'd have more robust matching
+                  return memo && (memo.includes(c.id) || c.id.includes(sig.signature.slice(0, 8)));
+                })?.id : undefined;
               
               return {
                 signature: sig.signature,

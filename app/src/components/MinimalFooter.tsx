@@ -1,3 +1,4 @@
+import React from 'react';
 const MinimalFooter = () => {
   return (
     <footer className="bg-gray-900 py-6 border-t border-gray-800">
