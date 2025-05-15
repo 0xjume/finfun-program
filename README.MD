@@ -27,3 +27,10 @@ A decentralized application built on Solana that lets users create and participa
 4. Run the development server: `npm run dev`
 
 ## Environment Variables
+# Vite environment variables must be prefixed with VITE_
+# Using the standard Helius URL format
+VITE_SOLANA_RPC_URL=https://devnet.helius-rpc.com/v1/YOUR_API_KEY
+VITE_PROGRAM_ID=YOUR_PROGRAM_ID
+
+# Ave.ai API key 
+VITE_AVE_API_KEY=YOUR_AVE_API_KEY
