@@ -1,0 +1,13 @@
+{
+  "name": "finfun-program-tests",
+  "version": "1.0.0",
+  "description": "Test scripts for the Finfun Solana program",
+  "scripts": {
+    "test-program": "node test-program.js"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "@solana/web3.js": "^1.98.2",
+    "borsh": "^2.0.0"
+  }
+}

@@ -28,40 +28,53 @@ export const getProvider = (wallet: any) => {
   return provider;
 };
 
-// Get Program using the pattern from Anchor examples
+// Get Program using the pattern directly from Anchor examples
 export const getProgram = (wallet: any, idl: any) => {
   try {
+    // Check program ID
     if (!PROGRAM_ID) {
       console.error('PROGRAM_ID is not set. Please check your environment variables.');
       return null;
     }
     
-    // Based on the Anchor TypeScript examples pattern
+    // Check wallet connection
+    if (!wallet || !wallet.publicKey) {
+      console.log('Wallet not connected or publicKey not available');
+      return null;
+    }
+    
+    // Step 1: Set up the connection
     const connection = getConnection();
+    
+    // Step 2: Create the provider (must be AnchorProvider)
     const provider = new anchor.AnchorProvider(
-      connection, 
+      connection,
       wallet,
       { commitment: 'confirmed' }
     );
     
-    // Set the provider for Anchor to use globally
+    // Step 3: Set the provider globally (required by Anchor)
     anchor.setProvider(provider);
     
-    // Use the actual Anchor documentation pattern for creating a program
-    // https://coral-xyz.github.io/anchor/ts/index.html
-    try {
-      // Create the program ID from our environment variable
-      const programId = new PublicKey(PROGRAM_ID);
-      
-      // Use the provider and programId to create a proper program instance
-      // @ts-ignore - Ignoring type issues as we know this is the correct Anchor pattern
-      return new anchor.Program(idl, programId, provider);
-    } catch (innerError) {
-      console.error('Inner error creating program:', innerError);
-      return null;
-    }
+    // Step 4: Parse the program ID
+    const programId = new PublicKey(PROGRAM_ID);
+    
+    // Step 5: Use the IDL passed in or load from file
+    const programIdl = idl || require('../idl/finfun.json');
+    
+    // Step 6: Initialize the program
+    // Use type assertions to handle potential Anchor version differences
+    // This is needed because different versions of Anchor have different parameter orders
+    // @ts-ignore - Bypass TypeScript type checking for this specific line
+    const program = new anchor.Program(programIdl, programId);
+    
+    console.log('Anchor program initialized successfully');
+    // For troubleshooting, log the program ID
+    console.log('Program ID:', programId.toString());
+    
+    return program;
   } catch (error) {
-    console.error('Error creating Anchor Program:', error);
+    console.error('Error initializing Anchor program:', error);
     return null;
   }
 };
