@@ -4,6 +4,9 @@ import { Program } from '@coral-xyz/anchor';
 import { useAnchorWallet } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 
+// Import the IDL directly
+import idl from '../idl/finfun.json';
+
 // Use the actual deployed program ID 
 const PROGRAM_ID = new PublicKey('HJnVtBaQmzcbdeiHj5Y29UvXHiMBaKaTxjggva6ueMnq');
 
@@ -35,16 +38,20 @@ export function useProgram() {
             wallet,
             { commitment: 'confirmed' }
           );
-
-          // Initialize the program
-          // In a real app, we would load the IDL from a JSON file
-          // const idl = await Program.fetchIdl(PROGRAM_ID, provider);
           
-          // For now, we'll use a placeholder
-          // setProgram(new Program(idl, PROGRAM_ID, provider));
+          // Set the provider as the default one
+          anchor.setProvider(provider);
 
-          // Since we don't have the actual IDL loaded here, we'll just set program to null for mock purposes
-          setProgram(null);
+          try {
+            // Create program instance using the imported IDL and program ID
+            // @ts-ignore - idl typing issue with Anchor
+            const program = new Program(idl, PROGRAM_ID, provider);
+            setProgram(program);
+            console.log('Successfully initialized Finfun program');
+          } catch (idlError) {
+            console.error('Error initializing program:', idlError);
+            setError('Failed to initialize program');
+          }
         }
 
         setLoading(false);

@@ -42,7 +42,8 @@ interface CompetitionContextType {
 const CompetitionContext = createContext<CompetitionContextType | undefined>(undefined);
 
 export const CompetitionProvider: React.FC<{children: ReactNode}> = ({ children }) => {
-  const { publicKey } = useWallet();
+  const wallet = useWallet();
+  const { publicKey, connected } = wallet;
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [userCompetitions, setUserCompetitions] = useState<Competition[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,20 +54,25 @@ export const CompetitionProvider: React.FC<{children: ReactNode}> = ({ children 
     setLoading(true);
     setError(null);
     try {
-      const comps = await competitionService.fetchAllCompetitions(publicKey);
-      setCompetitions(comps);
-      // Filter competitions the user has joined (if wallet connected)
-      if (publicKey) {
+      // Only attempt to fetch competitions if wallet is connected
+      if (connected && publicKey) {
+        const comps = await competitionService.fetchAllCompetitions(publicKey);
+        setCompetitions(comps);
+        // Filter competitions the user has joined
         const userAddress = publicKey.toString();
         const userComps = comps.filter((comp: Competition) => comp.userHasJoined || comp.creatorPublicKey === userAddress);
         setUserCompetitions(userComps);
       } else {
+        // Use mock data or empty arrays when wallet is not connected
+        console.log('Wallet not connected. Using empty competition data.');
+        setCompetitions([]);
         setUserCompetitions([]);
       }
       setLoading(false);
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch competitions');
-      toast.error(err.message || 'Failed to fetch competitions');
+      console.error('Error fetching competitions:', err);
+      setError(err?.message || 'Failed to fetch competitions');
+      toast.error(err?.message || 'Failed to fetch competitions');
       setLoading(false);
     }
   };
